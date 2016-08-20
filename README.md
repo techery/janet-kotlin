@@ -84,3 +84,13 @@ ActionStateSubscriber
     
 ```
 
+ActionStateSubscriber
+
+
+```kotlin
+
+    pipe.createObservable(SimpleAction())
+            .mapToResult()
+            .subscribe()
+    
+```

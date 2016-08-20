@@ -5,6 +5,7 @@ import io.techery.janet.ActionService
 import io.techery.janet.ActionState
 import io.techery.janet.Janet
 import io.techery.janet.helper.ActionStateSubscriber
+import io.techery.janet.helper.ActionStateToActionTransformer
 import rx.Observable
 import rx.Scheduler
 import rx.Subscription
@@ -36,10 +37,14 @@ inline fun <reified A : Any> Janet.createPipe(scheduler: Scheduler): ActionPipe<
     return createPipe(A::class.java, scheduler)
 }
 
-inline fun <A : Any> Observable<ActionState<A>>.subscribeAction(evaluateBody: ActionStateSubscriber<A>.() -> Unit): Subscription {
+inline fun <reified A : Any> Observable<ActionState<A>>.subscribeAction(evaluateBody: ActionStateSubscriber<A>.() -> Unit): Subscription {
     val subscriber = ActionStateSubscriber<A>()
     subscriber.evaluateBody()
     return subscribe(subscriber)
+}
+
+inline fun <reified A : Any> Observable<ActionState<A>>.mapToResult(): Observable<A> {
+    return compose(ActionStateToActionTransformer())
 }
 
 //TODO: add javadoc for each method
