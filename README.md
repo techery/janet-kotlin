@@ -84,8 +84,7 @@ ActionStateSubscriber
     
 ```
 
-ActionStateSubscriber
-
+ActionStateToActionTransformer
 
 ```kotlin
 
