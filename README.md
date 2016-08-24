@@ -123,3 +123,13 @@ ActionStateToActionTransformer
             .subscribe()
     
 ```
+
+Observable<ActionState<*>>
+
+```kotlin
+
+    pipe.observe()
+            .takeUntil(SUCCESS, FAIL)
+            .subscribe()
+    
+```

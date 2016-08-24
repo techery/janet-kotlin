@@ -47,6 +47,10 @@ inline fun <reified A : Any> Observable<ActionState<A>>.mapToResult(): Observabl
     return compose(ActionStateToActionTransformer())
 }
 
+inline fun <reified A : Any> Observable<ActionState<A>>.takeUntil(vararg statuses: ActionState.Status): Observable<ActionState<A>> {
+    return takeUntil { statuses.contains(it.status) }
+}
+
 //TODO: add javadoc for each method
 
 

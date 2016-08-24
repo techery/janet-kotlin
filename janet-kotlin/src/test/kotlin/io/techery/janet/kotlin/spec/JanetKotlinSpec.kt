@@ -4,15 +4,17 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
-import io.techery.janet.ActionHolder
-import io.techery.janet.ActionPipe
-import io.techery.janet.ActionService
-import io.techery.janet.TestActionService
+import io.techery.janet.*
+import io.techery.janet.ActionState.Status.PROGRESS
+import io.techery.janet.ActionState.Status.SUCCESS
 import io.techery.janet.action.TestAction
 import io.techery.janet.kotlin.*
+import io.techery.janet.kotlin.ActionServiceWrapper
 import org.jetbrains.spek.api.Spek
+import rx.observers.TestSubscriber
 import rx.schedulers.Schedulers
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class JanetKotlinSpec : Spek({
 
@@ -110,6 +112,20 @@ class JanetKotlinSpec : Spek({
                         successCall.run()
                     }
             verify(successCall).run()
+        }
+
+        it("should take states until defined status") {
+            val janet = janet(simpleService)
+            val subscriber = TestSubscriber<ActionState<TestAction>>()
+            val pipe: ActionPipe<TestAction> = janet.createPipe()
+            pipe.observe()
+                    .takeUntil(PROGRESS)
+                    .subscribe(subscriber)
+            pipe.send(TestAction(true))
+            subscriber.assertUnsubscribed()
+            subscriber.assertCompleted()
+            subscriber.assertValueCount(2)
+            assertTrue { subscriber.onNextEvents.none { it.status == SUCCESS } }
         }
     }
 }) {
